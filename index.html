@@ -15,6 +15,25 @@
   <meta name="description" content="Formosa Taffeta composite materials: 2D woven carbon fabric, UD fabric, prepreg and multiaxial fabric for B2B applications.">
   <title>Formosa Taffeta Composite Materials</title>
   <link rel="stylesheet" href="css/style.css">
+  
+  <!-- 確保改為 a 標籤後的產品卡片樣式正常，您可以把這段移至 css/style.css 內 -->
+  <style>
+    a.product-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.3s ease; /* 增加一點互動效果，可選 */
+    }
+    a.product-card:hover {
+      transform: translateY(-5px); /* 滑鼠游標經過時微微浮起，可選 */
+    }
+    .card-link {
+      display: inline-block;
+      margin-top: 10px;
+      color: #0056b3; /* 假設原本 View specifications 連結的顏色，可依據原本樣式調整 */
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 <header class="site-header">
@@ -66,26 +85,31 @@
         <div><p class="section-kicker">OUR PRODUCTS</p><h2>Carbon Fiber Solutions</h2></div>
       </div>
       <div class="product-grid">
-        <article class="product-card">
+        <!-- 將原本的 article 改為 a 標籤包裹 -->
+        <a class="product-card" href="product-2d-woven.html">
           <img src="images/product-2d-woven.jpg" alt="2D woven carbon fiber fabric">
-          <h3>2D Woven Carbon Fabric</h3><p>Various weaves for diverse applications.</p>
-          <a href="product-2d-woven.html">View specifications →</a>
-        </article>
-        <article class="product-card">
+          <h3>2D Woven Carbon Fabric</h3>
+          <p>Various weaves for diverse applications.</p>
+          <span class="card-link">View specifications →</span>
+        </a>
+        <a class="product-card" href="product-ud.html">
           <img src="images/product-ud.jpg" alt="UD carbon fabric">
-          <h3>UD Carbon Fabric</h3><p>High strength in one direction.</p>
-          <a href="product-ud.html">View specifications →</a>
-        </article>
-        <article class="product-card">
+          <h3>UD Carbon Fabric</h3>
+          <p>High strength in one direction.</p>
+          <span class="card-link">View specifications →</span>
+        </a>
+        <a class="product-card" href="product-prepreg.html">
           <img src="images/product-prepreg.jpg" alt="Carbon fiber prepreg">
-          <h3>Prepreg</h3><p>Ready for high-performance composite manufacturing.</p>
-          <a href="product-prepreg.html">View specifications →</a>
-        </article>
-        <article class="product-card">
+          <h3>Prepreg</h3>
+          <p>Ready for high-performance composite manufacturing.</p>
+          <span class="card-link">View specifications →</span>
+        </a>
+        <a class="product-card" href="product-multiaxial.html">
           <img src="images/product-multiaxial.jpg" alt="Multiaxial carbon fiber fabric">
-          <h3>Multiaxial Fabric</h3><p>Multi-directional reinforcement for complex structures.</p>
-          <a href="product-multiaxial.html">View specifications →</a>
-        </article>
+          <h3>Multiaxial Fabric</h3>
+          <p>Multi-directional reinforcement for complex structures.</p>
+          <span class="card-link">View specifications →</span>
+        </a>
       </div>
     </div>
   </section>
