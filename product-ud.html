@@ -18,7 +18,6 @@
 <style>
 .product-hero.product-ud{min-height:265px;color:#fff;display:flex;align-items:center;background:linear-gradient(90deg,rgba(3,11,22,.94),rgba(3,11,22,.72) 46%,rgba(3,11,22,.12)),url("images/product-ud/hero.jpg") center/cover no-repeat}
 .ud-overview{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
-.ud-overview img{width:100%;height:300px;object-fit:cover;border:1px solid var(--line)}
 .ud-overview p{color:#334153;font-size:16px;line-height:1.65}
 .ud-feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:26px 0 34px}
 .ud-feature-grid article{border:1px solid var(--line);padding:18px 15px;min-height:108px;background:#fff}
@@ -31,7 +30,7 @@
 .ud-card h3{margin:0 0 10px;color:var(--navy)}
 .ud-card p{margin:0;color:var(--muted);font-size:14px;line-height:1.7}
 @media(max-width:900px){.ud-overview{grid-template-columns:1fr}.ud-feature-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.ud-feature-grid,.ud-cards{grid-template-columns:1fr}.ud-overview img{height:240px}}
+@media(max-width:600px){.ud-feature-grid,.ud-cards{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -73,7 +72,19 @@
         <p>The catalogue specifies TAIRYFIL TC-36P-12K carbon fiber, 50 cm fabric width and 100 m packing length per roll for the listed reinforcement products.</p>
         <p>ECCF is listed at 200 g/m² and ECCH at 300 g/m². Other specifications can be customized based on request.</p>
       </div>
-      <img src="images/product-ud/overview.jpg" alt="UD carbon fiber fabric">
+
+      <!-- 輪播圖片展示框 -->
+      <div class="slider-wrapper">
+        <div class="slider-container" id="sliderContainer">
+          <div class="slider-image-box" id="sliderImageBox" title="點擊放大檢視">
+            <img id="activeSlideImg" src="images/product-ud/overview.jpg" alt="UD carbon fiber fabric">
+            <span class="slide-zoom-hint">🔍 點擊放大</span>
+            <span class="slide-counter" id="slideCounter">1 / 3</span>
+          </div>
+          <button type="button" class="slide-arrow prev-arrow" id="prevSlideBtn" aria-label="上一張">&#10094;</button>
+          <button type="button" class="slide-arrow next-arrow" id="nextSlideBtn" aria-label="下一張">&#10095;</button>
+        </div>
+      </div>
     </section>
 
     <section class="ud-feature-grid">
@@ -164,16 +175,110 @@
       <a class="footer-quote" href="request-a-quote.html">Request a Quote →</a>
     </div>
   </div>
-  <div class="footer-bottom">
-    <div class="site-container footer-bottom-inner">
-      <span>© 2026 Formosa Taffeta Co., Ltd. Composite Materials. All rights reserved.</span>
-    </div>
+  <div class="site-container footer-bottom-inner">
+    <span>© 2026 Formosa Taffeta Co., Ltd. Composite Materials. All rights reserved.</span>
   </div>
 </footer>
 
+<!-- 點擊放大彈窗 (Lightbox Modal) -->
+<div class="lightbox-modal" id="lightboxModal" aria-hidden="true">
+  <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close modal">&times;</button>
+  <div class="lightbox-dialog">
+    <img id="lightboxImg" src="" alt="Enlarged UD Fabric preview">
+  </div>
+</div>
+
 <script>
-const b=document.querySelector('.menu-toggle'),n=document.querySelector('.main-nav');
-if(b&&n){b.addEventListener('click',()=>{const o=n.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false')});}
+// 1. 手機漢堡選單
+const b = document.querySelector('.menu-toggle'), n = document.querySelector('.main-nav');
+if (b && n) {
+  b.addEventListener('click', () => {
+    const o = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', o ? 'true' : 'false');
+  });
+}
+
+// 2. UD 產品頁圖片清單（可依你的 images/product-ud/ 資料夾實際檔名增減）
+const overviewImages = [
+  "images/product-ud/overview.jpg",
+  "images/product-ud/overview-2.jpg",
+  "images/product-ud/overview-3.jpg"
+];
+
+let currentIndex = 0;
+const slideImg = document.getElementById('activeSlideImg');
+const counter = document.getElementById('slideCounter');
+const prevBtn = document.getElementById('prevSlideBtn');
+const nextBtn = document.getElementById('nextSlideBtn');
+const sliderBox = document.getElementById('sliderImageBox');
+
+function updateSlide(index) {
+  currentIndex = (index + overviewImages.length) % overviewImages.length;
+  if (slideImg) {
+    slideImg.style.opacity = '0.3';
+    setTimeout(() => {
+      slideImg.src = overviewImages[currentIndex];
+      slideImg.style.opacity = '1';
+    }, 100);
+  }
+  if (counter) {
+    counter.textContent = `${currentIndex + 1} / ${overviewImages.length}`;
+  }
+}
+
+if (prevBtn && nextBtn) {
+  prevBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    updateSlide(currentIndex - 1);
+  });
+  nextBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    updateSlide(currentIndex + 1);
+  });
+}
+
+// 支援手機觸控左右滑動
+let touchStartX = 0;
+let touchEndX = 0;
+const sliderContainer = document.getElementById('sliderContainer');
+
+if (sliderContainer) {
+  sliderContainer.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  sliderContainer.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    const swipeDist = touchEndX - touchStartX;
+    if (Math.abs(swipeDist) > 40) {
+      if (swipeDist < 0) updateSlide(currentIndex + 1);
+      else updateSlide(currentIndex - 1);
+    }
+  }, { passive: true });
+}
+
+// 3. 點擊放大檢視
+const modal = document.getElementById('lightboxModal');
+const modalImg = document.getElementById('lightboxImg');
+const modalClose = document.getElementById('lightboxClose');
+
+if (sliderBox && modal) {
+  sliderBox.addEventListener('click', () => {
+    modalImg.src = overviewImages[currentIndex];
+    modal.classList.add('is-active');
+  });
+
+  modalClose.addEventListener('click', () => modal.classList.remove('is-active'));
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.remove('is-active');
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-active')) {
+      modal.classList.remove('is-active');
+    }
+  });
+}
 </script>
 </body>
 </html>
