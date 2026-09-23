@@ -18,7 +18,6 @@
 <style>
 .product-hero.product-prepreg{min-height:265px;color:#fff;display:flex;align-items:center;background:linear-gradient(90deg,rgba(3,11,22,.94),rgba(3,11,22,.72) 46%,rgba(3,11,22,.12)),url("images/product-prepreg/hero.jpg") center/cover no-repeat}
 .prepreg-overview{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
-.prepreg-overview img{width:100%;height:300px;object-fit:cover;border:1px solid var(--line)}
 .prepreg-overview p{color:#334153;font-size:16px;line-height:1.65}
 .prepreg-feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:26px 0 34px}
 .prepreg-feature-grid article{border:1px solid var(--line);padding:18px 15px;min-height:108px;background:#fff}
@@ -27,8 +26,10 @@
 .prepreg-table-wrap{overflow-x:auto;border:1px solid var(--line);margin-bottom:24px}
 .prepreg-table-wrap table{min-width:820px}
 .prepreg-note{border-left:4px solid var(--red);background:#f7f9fb;padding:16px 18px;margin:22px 0;color:#4e5d6c;font-size:14px;line-height:1.65}
+/* 覆寫鼠標為普通指針 */
+.slider-image-box{cursor:default!important}
 @media(max-width:900px){.prepreg-overview{grid-template-columns:1fr}.prepreg-feature-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.prepreg-feature-grid{grid-template-columns:1fr}.prepreg-overview img{height:240px}}
+@media(max-width:600px){.prepreg-feature-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -70,7 +71,18 @@
         <p>All listed prepreg options use a resin-content range of 30–40% and a Tg range of 120–250°C, with 100 cm width.</p>
         <p>Carbon-yarn options include 12K, 12K/24K and 24K depending on product weight. Other specifications can be customized based on request.</p>
       </div>
-      <img src="images/product-prepreg/overview.jpg" alt="Prepreg production equipment">
+
+      <!-- 輪播圖片展示框（純切換，無放大） -->
+      <div class="slider-wrapper">
+        <div class="slider-container" id="sliderContainer">
+          <div class="slider-image-box">
+            <img id="activeSlideImg" src="images/product-prepreg/overview.jpg" alt="Prepreg production equipment">
+            <span class="slide-counter" id="slideCounter">1 / 2</span>
+          </div>
+          <button type="button" class="slide-arrow prev-arrow" id="prevSlideBtn" aria-label="上一張">&#10094;</button>
+          <button type="button" class="slide-arrow next-arrow" id="nextSlideBtn" aria-label="下一張">&#10095;</button>
+        </div>
+      </div>
     </section>
 
     <section class="prepreg-feature-grid">
@@ -111,9 +123,8 @@
         </table>
       </div>
 
-       <div class="prepreg-note" style="color: #0056b3; font-weight: bold;">
+      <div class="prepreg-note" style="color: #0056b3; font-weight: bold;">
         Other specifications can be customized upon request.
-
       </div>
     </section>
   </div>
@@ -176,8 +187,69 @@
 </footer>
 
 <script>
-const b=document.querySelector('.menu-toggle'),n=document.querySelector('.main-nav');
-if(b&&n){b.addEventListener('click',()=>{const o=n.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false')});}
+// 1. 手機漢堡選單
+const b = document.querySelector('.menu-toggle'), n = document.querySelector('.main-nav');
+if (b && n) {
+  b.addEventListener('click', () => {
+    const o = n.classList.toggle('open');
+    b.setAttribute('aria-expanded', o ? 'true' : 'false');
+  });
+}
+
+// 2. Prepreg 產品圖片清單（先設為 2 張）
+const overviewImages = [
+  "images/product-prepreg/overview.jpg",
+  "images/product-prepreg/overview-2.jpg"
+];
+
+let currentIndex = 0;
+const slideImg = document.getElementById('activeSlideImg');
+const counter = document.getElementById('slideCounter');
+const prevBtn = document.getElementById('prevSlideBtn');
+const nextBtn = document.getElementById('nextSlideBtn');
+
+function updateSlide(index) {
+  currentIndex = (index + overviewImages.length) % overviewImages.length;
+  if (slideImg) {
+    slideImg.style.opacity = '0.3';
+    setTimeout(() => {
+      slideImg.src = overviewImages[currentIndex];
+      slideImg.style.opacity = '1';
+    }, 100);
+  }
+  if (counter) {
+    counter.textContent = `${currentIndex + 1} / ${overviewImages.length}`;
+  }
+}
+
+if (prevBtn && nextBtn) {
+  prevBtn.addEventListener('click', () => {
+    updateSlide(currentIndex - 1);
+  });
+  nextBtn.addEventListener('click', () => {
+    updateSlide(currentIndex + 1);
+  });
+}
+
+// 支援手機觸控左右滑動
+let touchStartX = 0;
+let touchEndX = 0;
+const sliderContainer = document.getElementById('sliderContainer');
+
+if (sliderContainer) {
+  sliderContainer.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  sliderContainer.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    const swipeDist = touchEndX - touchStartX;
+    if (Math.abs(swipeDist) > 40) {
+      if (swipeDist < 0) updateSlide(currentIndex + 1);
+      else updateSlide(currentIndex - 1);
+    }
+  }, { passive: true });
+}
 </script>
 </body>
 </html>
